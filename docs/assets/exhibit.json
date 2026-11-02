@@ -274,7 +274,7 @@
    "id": "treadle",
    "text": "The cast-iron treadle is a foot lever rocking on two pointed pivot screws set in the side frames. Rocking it heel-and-toe pushes the pitman rod up and down, which turns the crank on the band wheel: oscillation in, continuous rotation out. The open lattice saves iron while keeping the plate stiff.",
    "pose": [
-    -20,
+    20,
     0,
     0
    ],

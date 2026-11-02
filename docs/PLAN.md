@@ -18,7 +18,7 @@ comes to rest at every corner. Display poses are Euler degrees `{x, y, z}` (appl
 | 4 | `shuttle` | `sys_shuttle` | 4 | 418 | 8×29×27 | (0, 0, 0.42) | −35, 20, 0 | part |
 | 5 | `drive_wheel` | `sys_drive_wheel` | 1 | 310 | 9×14×14 | (0.10, 0, 0) | 0, 90, 0 | part |
 | 6 | `belt_drive` | `sys_belt_drive` | 3 | 1,137 | 17×78×31 | (0, 0, 0.47) | 0, 90, 0 | part |
-| 7 | `treadle` | `sys_treadle` | 1 | 2,013 | 74×5×31 | (0, 0, 0.40) | −20, 0, 0 | part |
+| 7 | `treadle` | `sys_treadle` | 1 | 2,013 | 74×5×31 | (0, 0, 0.40) | 20, 0, 0 | part |
 | 8 | `pitman_rod` | `sys_pitman` | 1 | 207 | 3×34×14 | (−0.03, 0, 0) then (0, 0, 0.40) | 35, 90, 0 | part |
 | 9 | `crankshaft` | `sys_crankshaft` | 1 | 193 | 34×4×4 | (0, 0, 0.29) | 10, −15, 0 | part |
 | 10 | `gear_train` | `sys_gear_train` | 5 | 425 | 32×11×13 | (0, −0.12, 0) then (0, 0, 0.40) | −20, 25, 0 | part |

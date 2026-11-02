@@ -149,7 +149,7 @@ local SUBSYSTEMS = {
 	},
 	{
 		id = "treadle", name = "Treadle",
-		exit = {{0, 0, 0.40}}, out = {0, 0.10, 0.30}, pose = {-20, 0, 0},
+		exit = {{0, 0, 0.40}}, out = {0, 0.10, 0.30}, pose = {20, 0, 0},
 		text = "The cast-iron treadle is a foot lever rocking on two pointed pivot screws set in the side frames. Rocking it heel-and-toe pushes the pitman rod up and down, which turns the crank on the band wheel: oscillation in, continuous rotation out. The open lattice saves iron while keeping the plate stiff.",
 		connects = {"pitman_rod", "cabinet", "belt_drive"},
 		fact = "A practised operator treads about 60 to 100 times a minute. With this machine's 2.5:1 belt ratio that is roughly 150 to 250 stitches a minute.",
