@@ -127,7 +127,13 @@ fetch('assets/test-report.json').then((r) => (r.ok ? r.json() : null)).then((rep
 function md(text, maxItems) {
   const out = [];
   let n = 0;
+  // fold wrapped continuation lines into the bullet above them
+  const lines = [];
   for (const line of text.split('\n')) {
+    if (/^\s{2,}\S/.test(line) && lines.length && /^\s*[-*] /.test(lines[lines.length - 1])) lines[lines.length - 1] += ' ' + line.trim();
+    else lines.push(line);
+  }
+  for (const line of lines) {
     if (/^## /.test(line)) { if (n >= maxItems) break; out.push(`<h4>${esc(line.slice(3))}</h4>`); n++; }
     else if (/^\s*[-*] /.test(line)) out.push(`<li>${esc(line.replace(/^\s*[-*] /, '')).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')}</li>`);
   }

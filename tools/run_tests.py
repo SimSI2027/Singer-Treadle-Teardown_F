@@ -411,7 +411,8 @@ def main():
     print("\n%d / %d checks passed" % (passed, len(results)))
     if want_json:
         out = sys.argv[sys.argv.index("--json") + 1]
-        json.dump({"checks": [{"name": n, "ok": o, "detail": d} for n, o, d in results], "contacts": report}, open(out, "w"), indent=1)
+        with open(out, "w", newline="\n") as f:
+            json.dump({"checks": [{"name": n, "ok": o, "detail": d} for n, o, d in results], "contacts": report}, f, indent=1)
     sys.exit(0 if passed == len(results) else 1)
 
 
