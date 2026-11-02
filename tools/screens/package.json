@@ -1,0 +1,8 @@
+{
+  "name": "singer-exhibit-screens",
+  "private": true,
+  "description": "Captures docs/screenshots from the web edition (same voxel data as the mod).",
+  "type": "module",
+  "scripts": { "capture": "node capture.mjs" },
+  "dependencies": { "playwright": "1.58.2" }
+}

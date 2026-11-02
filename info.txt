@@ -1,0 +1,4 @@
+name = Singer Treadle Exhibit
+author = SimSI2027
+description = An interactive museum engineering exhibit of an antique Singer treadle sewing machine (c. 1880-1915). Sixteen subsystems, one brass button each: look at a button on the console and press [E] to withdraw that part, slide the rest of the machine aside and bring the part forward with an explanation of what it does. RUN drives the whole machine from the treadle; RESET returns everything home. Fully kinematic and deterministic: nothing breaks, burns or falls. Spawn it from the spawn menu: Exhibits / Singer Treadle Exhibit.
+tags = Asset

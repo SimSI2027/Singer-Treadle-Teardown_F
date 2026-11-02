@@ -49,10 +49,10 @@ PALETTE = {
     "glow_green":    (182, (0x74, 0xb0, 0x5c), "emit"),
     "engrave":       (183, (0x3a, 0x2c, 0x16), "metal"),
     "steel_dark":    (184, (0x55, 0x59, 0x5e), "metal"),
-    "oak":           (185, (0xb3, 0x7c, 0x46), "matte"),
-    "oak_mid":       (186, (0x95, 0x62, 0x30), "matte"),
-    "oak_dark":      (187, (0x6b, 0x42, 0x20), "matte"),
-    "walnut":        (188, (0x3e, 0x29, 0x18), "matte"),
+    "oak":           (185, (0xc6, 0x93, 0x55), "matte"),
+    "oak_mid":       (186, (0xa4, 0x72, 0x3c), "matte"),
+    "oak_dark":      (187, (0x76, 0x4b, 0x22), "matte"),
+    "walnut":        (188, (0x52, 0x37, 0x22), "matte"),
     "leather":       (189, (0xa9, 0x73, 0x3d), "matte"),
     "leather_dark":  (190, (0x7d, 0x52, 0x29), "matte"),
     "rubber":        (191, (0x2b, 0x27, 0x25), "matte"),
@@ -60,12 +60,19 @@ PALETTE = {
     "felt":          (193, (0x2f, 0x5a, 0x3a), "matte"),
     "spool":         (194, (0xcb, 0x9b, 0x63), "matte"),
     "ivory":         (195, (0xe8, 0xdd, 0xc4), "matte"),
-    "floor":         (196, (0x4a, 0x3a, 0x2c), "matte"),
+    "floor":         (196, (0x7a, 0x5c, 0x40), "matte"),
     "bobbin_thread": (197, (0xe9, 0xe3, 0xd3), "matte"),
 }
 EMISSIVE = [k for k, v in PALETTE.items() if v[2] == "emit"]
 
 PLINTH_H = 8  # cm; the machine group sits on the plinth
+
+# exhibit-frame anchors (metres): where the machine stands, where it slides to, where parts are shown
+ANCHORS = {
+    "machine": (0.0, PLINTH_H / 100.0, 0.0),
+    "shift": (-0.9, PLINTH_H / 100.0, 0.0),
+    "display": (0.0, 1.1, 1.3),
+}
 
 # ----------------------------------------------------------------------------- budgets (brief 2.7)
 BUDGET = {"bodies": 20, "shapes": 180, "voxels": 250_000, "shapes_per_body": 30}
@@ -782,8 +789,7 @@ def build_console():
         x0 = X0 + 43
         box(b, x0, x0 + 13, 97, 100, z0, z0 + 16, colr)
         if glyph:
-            text(b, "R", FONT3, (x0 + 5, 99, z0 + 5), (1, 0, 0), (0, 0, 1), "engrave")
-            text(b, "R", FONT3, (x0 + 5, 99, z0 + 6), (1, 0, 0), (0, 0, 1), "engrave")
+            text(b, "R", FONT7, (x0 + 5, 99, z0 + 5), (1, 0, 0), (0, 0, 1), "engrave")
         else:
             for k in range(5):                                             # play triangle
                 for zz in range(k, 9 - k):
@@ -805,7 +811,7 @@ def build_plinth():
         p.set(x, PLINTH_H - 1, 30, "brass_dark")
     dais = S("display_dais", "plinth", 30)
     cyl(dais, "y", 0.0, 130.0, 30, 0, 6, "walnut", rin=29)
-    cyl(dais, "y", 0.0, 130.0, 30, 5, 6, "walnut")
+    cyl(dais, "y", 0.0, 130.0, 30, 5, 6, "floor")
     cyl(dais, "y", 0.0, 130.0, 30, 5, 6, "brass", rin=28.5)
     cyl(dais, "y", 0.0, 130.0, 4, 5, 6, "brass")
 
@@ -1014,8 +1020,8 @@ def write_prefab(bodies):
     w('      </body>')
     w('    </group>')
     w('    <group name="display" pos="0 0 0">')
-    w('      <location name="display_point" tags="anchor=display" pos="0 1.1 1.3"/>')
-    w('      <location name="shift_point" tags="anchor=shift" pos="-0.9 %s 0"/>' % fmt(P))
+    w('      <location name="display_point" tags="anchor=display" pos="%s"/>' % " ".join(fmt(v) for v in ANCHORS["display"]))
+    w('      <location name="shift_point" tags="anchor=shift" pos="%s"/>' % " ".join(fmt(v) for v in ANCHORS["shift"]))
     w('      <body name="plinth" tags="plinth" pos="0 0 0" dynamic="false">')
     for s in bodies["plinth"]:
         w('        <vox file="MOD/vox/%s.vox" pos="%s %s %s" scale="0.1"/>'
@@ -1094,6 +1100,7 @@ def write_viewer(shape_meta, blob, centers, bounds):
         "generated_by": "tools/generate.py",
         "units": "cm cells; positions in machine frame except console_plate/plinth (exhibit frame)",
         "plinth_h_cm": PLINTH_H,
+        "anchors": ANCHORS,
         "palette": pal,
         "shapes": shape_meta,
         "centers_m": centers,

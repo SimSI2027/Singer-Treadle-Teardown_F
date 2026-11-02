@@ -1,0 +1,102 @@
+[
+ {
+  "file": "01-complete-machine.png",
+  "caption": "The complete exhibit: machine on its plinth, display dais, brass console"
+ },
+ {
+  "file": "02-console.png",
+  "caption": "The console: 16 numbered subsystem buttons, RESET and RUN"
+ },
+ {
+  "file": "03-machine-closeup.png",
+  "caption": "The head: sectioned arm and needle end, gold decals, thread path"
+ },
+ {
+  "file": "04-anim-withdraw.png",
+  "caption": "Animation: the needle assembly withdraws forward along its exit path"
+ },
+ {
+  "file": "05-anim-shift.png",
+  "caption": "Animation: the machine slides aside as one rigid group"
+ },
+ {
+  "file": "06-anim-makeway.png",
+  "caption": "Frame mode: every part makes way before the head lifts out"
+ },
+ {
+  "file": "07-anim-present.png",
+  "caption": "Animation: the feed mechanism rides its Bezier to the display point"
+ },
+ {
+  "file": "08-run.png",
+  "caption": "RUN: treadle, pitman, band wheel, belt, balance wheel and needle bar in motion"
+ },
+ {
+  "file": "sub-01-needle_assembly.png",
+  "caption": "1 · Needle Assembly on display"
+ },
+ {
+  "file": "sub-02-presser_foot.png",
+  "caption": "2 · Presser Foot on display"
+ },
+ {
+  "file": "sub-03-bobbin.png",
+  "caption": "3 · Bobbin & Winder on display"
+ },
+ {
+  "file": "sub-04-shuttle.png",
+  "caption": "4 · Vibrating Shuttle on display"
+ },
+ {
+  "file": "sub-05-drive_wheel.png",
+  "caption": "5 · Balance Wheel on display"
+ },
+ {
+  "file": "sub-06-belt_drive.png",
+  "caption": "6 · Belt Drive & Band Wheel on display"
+ },
+ {
+  "file": "sub-07-treadle.png",
+  "caption": "7 · Treadle on display"
+ },
+ {
+  "file": "sub-08-pitman_rod.png",
+  "caption": "8 · Pitman Rod on display"
+ },
+ {
+  "file": "sub-09-crankshaft.png",
+  "caption": "9 · Arm Shaft & Crank on display"
+ },
+ {
+  "file": "sub-10-gear_train.png",
+  "caption": "10 · Feed Mechanism on display"
+ },
+ {
+  "file": "sub-11-tension_regulator.png",
+  "caption": "11 · Tension Regulator on display"
+ },
+ {
+  "file": "sub-12-spool_pin.png",
+  "caption": "12 · Spool Pin on display"
+ },
+ {
+  "file": "sub-13-thread_guide_path.png",
+  "caption": "13 · Thread Path on display"
+ },
+ {
+  "file": "sub-14-machine_head.png",
+  "caption": "14 · Machine Head on display"
+ },
+ {
+  "file": "sub-15-cabinet.png",
+  "caption": "15 · Cabinet & Stand on display"
+ },
+ {
+  "file": "sub-16-drawers.png",
+  "caption": "16 · Drawers on display"
+ },
+ {
+  "file": "99-final-exhibit.png",
+  "caption": "Final exhibit: a subsystem on display beside the shifted machine"
+ }
+]
