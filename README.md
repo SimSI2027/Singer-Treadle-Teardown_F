@@ -9,7 +9,7 @@ Built on the [teardown skill](https://github.com/elvarofficial/teardown): one ma
 
 - **Live exhibit (single HTML, runs offline):** `dist/singer-treadle.html`. Also published on the project site.
 - **Project site:** <https://simsi2027.github.io/Singer-Treadle-Teardown_F/>
-- **Film:** `docs/assets/film.mp4` (88 s, 60 fps, with a procedural score).
+- **Film:** `docs/assets/film.mp4` (75 s, 60 fps, with a procedural score).
 
 ## Screenshots
 
@@ -85,7 +85,8 @@ Requirements: Node.js 20 or newer. For the film: `ffmpeg` on the PATH and Python
 npm install && npx playwright install chromium   # dependencies and the test browser
 npm run build                                    # dist/singer-treadle.html (and docs/exhibit.html)
 npm test                                         # build, crosscheck, Playwright suite
-npm run film                                     # the 88 s film with its score → docs/assets/film.mp4
+npm run film                                     # the 75 s film with its score → docs/assets/film.mp4
+npm run site                                     # docs/index.html from the exhibit's own texts
 npm run screenshots                              # docs/screenshots/*.png from the live page
 ```
 

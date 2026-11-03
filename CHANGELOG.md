@@ -33,3 +33,30 @@ every removed file (commit `1ff9b38` is the last commit that has them).
 - `sims/singer-treadle-live/` and `sims/singer-treadle-film/`: the two entry points.
 - `docs/CONVENTIONS.md` (what the skill does, with quoted files and lines) and `docs/PLAN.md` (dimensions, timing, budgets, verification).
 - Research notes: `docs/research/linkage-search.md` (the treadle geometry), `docs/research/source-notes.md` (how each fact was checked).
+- The exhibit: sixteen parts with fixed ids, presented and ghosted, with callouts and an info card; the stitch-cycle strip; the
+  brass console plate with RUN, PUMP, RESET, presser lift and two sliders; the idle tour (all sixteen parts, about 112 s).
+- The film: 75 s at 60 fps, the drive chain and the stitch, with captions and a procedural score (`score.py`, −14 LUFS).
+- `tools/`: timelines from the script, release copy, the registry cross-check, screenshots, the film driver, review sheets,
+  and the Pages site generator (`tools/site.mjs`, which reads the exhibit's own texts and draws the stitch cycle from the solver).
+- `tests/exhibit.spec.mjs` (eight Playwright tests) and `tests/CHECKLIST.md` (the manual checks).
+- `docs/review/`: the review sheet of the film's beats (round 1) and `NOTES.md` with what was read and changed.
+
+### Verified in this session
+
+- `npm run build`: the live page builds at 0.99 MB; the film page builds too.
+- `npx playwright test`: 8 of 8 pass. Coverage: no console errors, no network requests, WebGL created; sixteen keys with the fixed
+  ids; each part opens, is screenshotted, resets, and every group returns home within 1e-4; opening B closes A first (the
+  presenter's timeline); the idle tour starts after the threshold and input cancels it; the belt ratio, the stitches a minute,
+  the needle at bottom dead centre when the shuttle hook passes, the 30 mm stroke, and the feed dog moving only while the needle
+  is out of the cloth; determinism; the frame time under 20 ms.
+- `node tools/crosscheck.mjs`: sixteen parts, sixteen keys, sixteen tour beats, the built page, the sixteen screenshots.
+- The film: 75.1 s, 9 part openings, 325 stitches and 141 treadle cycles from the machine's own timing.
+
+### Known limitations
+
+- The GPU used for the checks was a discrete NVIDIA card. The brief asks for 60 fps on an integrated laptop GPU; that has not been
+  measured. The quality tiers (`live.js` `QUALITY`) lower the pixel ratio and turn off the occlusion pass if the frame time drops.
+- The decal-era attribution ("Sphinx", "Red Eye") is not stated: the search did not verify it (`docs/research/source-notes.md`).
+- Two period facts (Elias Howe's 1846 needle, the Clark instalment attribution) are stated with their status in the research note.
+- The film and the tour use a simplified model: the shuttle is a boat in a race, the thread is a tube through its guides, and the
+  feed dog is a plain toothed bar. The geometry is procedural, not scanned from a real machine.

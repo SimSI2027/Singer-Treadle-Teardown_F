@@ -1,0 +1,42 @@
+{
+ "ids": [
+  "needle_assembly",
+  "presser_foot",
+  "bobbin",
+  "shuttle",
+  "drive_wheel",
+  "belt_drive",
+  "treadle",
+  "pitman_rod",
+  "crankshaft",
+  "gear_train",
+  "tension_regulator",
+  "spool_pin",
+  "thread_guide_path",
+  "machine_head",
+  "cabinet",
+  "drawers"
+ ],
+ "files": [
+  "hero.png",
+  "overview.png",
+  "running.png",
+  "sub-belt_drive.png",
+  "sub-bobbin.png",
+  "sub-cabinet.png",
+  "sub-crankshaft.png",
+  "sub-drawers.png",
+  "sub-drive_wheel.png",
+  "sub-gear_train.png",
+  "sub-machine_head.png",
+  "sub-needle_assembly.png",
+  "sub-pitman_rod.png",
+  "sub-presser_foot.png",
+  "sub-shuttle.png",
+  "sub-spool_pin.png",
+  "sub-tension_regulator.png",
+  "sub-thread_guide_path.png",
+  "sub-treadle.png",
+  "tour.png"
+ ]
+}
