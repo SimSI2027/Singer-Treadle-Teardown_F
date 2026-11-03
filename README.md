@@ -94,13 +94,22 @@ To preview the site locally: `python -m http.server -d docs 8000`, then open <ht
 
 ## Adding a seventeenth part
 
-1. Add an entry to `SUBSYSTEMS` in `sims/singer-treadle-shared/subsystems.js` (id, button, name, pivot, open view, callouts,
-   connections, text, fact): about 25 lines.
-2. Add its geometry as a block in `sims/singer-treadle-shared/machine.js` (inside `createMachine`, the group is `G[id]`): about
-   10–30 lines. Add its posing in `update()` if it moves.
-3. Add a key to `BUTTON_KEYS` in `subsystems.js` (a seventeenth key is not on the keyboard row, so it may be a shifted key).
-4. Add a beat to `EVENTS` in `script.js` if it should appear on the tour, and a caption if it needs one.
-5. Run `npm test`: `tools/crosscheck.mjs` fails until the button, the tour beat, the text and the screenshot all exist.
+A new part touches six places. The crosscheck and the Playwright suite fail until all of them agree.
+
+1. `sims/singer-treadle-shared/subsystems.js`: add an entry to `SUBSYSTEMS` (id, button, name, pivot, open view, callouts,
+   connections, text, fact), about 25 lines, and a key to `BUTTON_KEYS`. Free keys include `a s d f g h i j k m n o x z c v b`; the
+   keys `r`, `l`, `p`, space, `Esc` and the arrows are taken.
+2. `sims/singer-treadle-shared/machine.js`: add its geometry as a block inside `createMachine` (the group is `G[id]`), about 10–30
+   lines, and its posing in `update()` if it moves.
+3. `sims/singer-treadle-shared/console.js`: make room for seventeen keys in the console's key row. `keyW` and `keyGap` are set for
+   sixteen; seventeen keys need `keyW` of about 82 px to fit the 1,530 px plate.
+4. `sims/singer-treadle-shared/script.js`: add a beat (and its caption) to the `REST` list, which the tour visits. The crosscheck
+   requires a tour beat for every id.
+5. `tools/crosscheck.mjs` and `tests/exhibit.spec.mjs`: add the id to the `FIXED` list in each, and update the expected count of sixteen.
+6. Make its screenshot (`node tools/screenshots.mjs --only=<id>`), then run `npm test`.
+
+Text that says "sixteen" (the console's index heading, the film's intro caption, this README and the site) is not generated and
+needs a manual edit.
 
 ## Credits and licences
 
