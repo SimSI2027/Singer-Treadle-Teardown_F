@@ -1,0 +1,28 @@
+{
+  "name": "singer-treadle-teardown",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "An interactive teardown of an antique Singer treadle sewing machine, built on the teardown skill: a three.js simulator that runs offline as one HTML file.",
+  "license": "MIT",
+  "scripts": {
+    "setup": "npm install && npx playwright install chromium",
+    "build": "node sims/build.mjs singer-treadle-live && node tools/release.mjs",
+    "timeline": "node tools/timeline.mjs",
+    "film": "node tools/film.mjs",
+    "sheets": "node tools/sheets.mjs",
+    "screenshots": "node tools/screenshots.mjs",
+    "crosscheck": "node tools/crosscheck.mjs",
+    "test": "npm run build && node tools/crosscheck.mjs && playwright test"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "5.3.0",
+    "@fontsource/jetbrains-mono": "5.3.0",
+    "esbuild": "0.28.1",
+    "playwright": "1.58.2",
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.58.2"
+  }
+}
