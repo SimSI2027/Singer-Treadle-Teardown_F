@@ -1,119 +1,110 @@
-# Singer Treadle Exhibit: a Teardown mod
+# Singer Treadle · Teardown
 
-An interactive museum engineering exhibit of an antique **Singer treadle sewing machine** (c. 1880–1915)
-for [Teardown](https://teardowngame.com). Sixteen mechanical subsystems, sixteen brass buttons. Press
-one and that part withdraws along the path it was assembled by. The rest of the machine slides aside
-as one rigid group, the part rides forward to a display point and an info panel explains what it does,
-what it connects to, and a fact from the period. Press again and it all goes home.
+An interactive, offline simulator of an antique Singer treadle sewing machine (c. 1880–1915): cast-iron head,
+vibrating shuttle, balance wheel, leather belt to a big band wheel, cast-iron treadle stand and an oak cabinet with drawers.
+Press a number and that part comes forward to the middle of the screen, the rest of the machine fades, and a card explains
+what the part does, what it connects to, and a period fact. Left alone, the page tours itself through the drive chain.
 
-Nothing explodes, nothing breaks, nothing is driven by physics. Every motion is a pure function of
-time, so the exhibit behaves identically every time.
+Built on the [teardown skill](https://github.com/elvarofficial/teardown): one machine, one page, one film.
 
-**▶ Web edition and project site: <https://simsi2027.github.io/Singer-Treadle-Teardown_F/>.** The same
-voxels and the same choreography, running in the browser.
+- **Live exhibit (single HTML, runs offline):** `dist/singer-treadle.html`. Also published on the project site.
+- **Project site:** <https://simsi2027.github.io/Singer-Treadle-Teardown_F/>
+- **Film:** `docs/assets/film.mp4` (88 s, 60 fps, with a procedural score).
 
-![The complete exhibit](docs/screenshots/01-complete-machine.png)
+## Screenshots
 
-| Console | Withdraw | Slide aside | On display |
-|---|---|---|---|
-| ![](docs/screenshots/02-console.png) | ![](docs/screenshots/04-anim-withdraw.png) | ![](docs/screenshots/05-anim-shift.png) | ![](docs/screenshots/sub-06-belt_drive.png) |
-| **Frame mode: parts make way** | **RUN** | **Feed mechanism** | **Thread path** |
-| ![](docs/screenshots/06-anim-makeway.png) | ![](docs/screenshots/08-run.png) | ![](docs/screenshots/sub-10-gear_train.png) | ![](docs/screenshots/sub-13-thread_guide_path.png) |
+![The machine, running](docs/screenshots/hero.png)
 
-> Screenshots are rendered from the web edition by `tools/screens/capture.mjs`, which loads exactly
-> the voxel data the mod ships. They are not in-game captures (see [Roadmap](ROADMAP.md)).
+| Overview | Balance wheel on display | Treadle on display |
+|---|---|---|
+| ![](docs/screenshots/overview.png) | ![](docs/screenshots/sub-drive_wheel.png) | ![](docs/screenshots/sub-treadle.png) |
 
 ## Features
 
-- **16 subsystems**, one body each: needle assembly, presser foot, bobbin winder, vibrating shuttle,
-  balance wheel, belt drive & band wheel, treadle, pitman rod, arm shaft, feed mechanism, tension
-  regulator, spool pin, thread path, machine head, cabinet & stand, drawers.
-- **Brass lectern console**: a 4×4 grid of numbered buttons, plus RESET and RUN.
-- **Mechanical choreography.** Each part withdraws along its own multi-leg exit path, then the machine
-  slides aside as a rigid group, then the part rides a cubic Bezier to the display point and sways
-  ±12° so every side is seen. The **head** and **cabinet** (the castings everything lives in) use *frame
-  mode*: every other part first withdraws to make way.
-- **Articulation on display.** Drawers slide 60 % open, the drop-front swings down, the feed mechanism
-  spreads apart, the shuttle race opens.
-- **RUN.** One input, the band-wheel angle, drives everything for 6 s. The treadle rocks ±12°
-  (solved by circle intersection), the pitman follows as a rigid link, the wheels turn at the exact
-  2.5:1 belt ratio, the needle bar reciprocates and the shuttle swings. Four turns make ten stitches,
-  so the run ends exactly at home.
-- **Educational panel** for every subsystem: function, "Connected to", and a period fact.
-- **Indestructible by construction.** Only Teardown's unbreakable palette groups are used.
-- **Verified offline.** The real Lua script runs under Lua 5.1 against a stub API and the real
-  prefab. 30 checks, including voxel-exact collision checks along every path.
-
-## Installation
-
-1. Download or clone this repository:
-   `git clone https://github.com/SimSI2027/Singer-Treadle-Teardown_F.git`
-2. Copy the folder into `Documents/Teardown/mods/`. The repository root *is* the mod root
-   (`info.txt`, `prefab.xml`, `exhibit.lua`, `vox/`, `snd/`, `spawn.txt`).
-3. Start Teardown → **Mod manager** → enable **Singer Treadle Exhibit**.
-4. In a sandbox level open the **spawn menu** → **Exhibits → Singer Treadle Exhibit**.
+- **Sixteen parts, one button each** (keys `1`–`9`, `0`, `Q W E T Y U`). A part comes forward, the rest ghosts, the camera frames it,
+  callouts name its parts, and it keeps moving.
+- **Real kinematics.** One master angle (the balance wheel) drives everything. The treadle is a four-bar linkage (24° swing),
+  the belt ratio is 2.31 : 1, the needle stroke is 30 mm, the take-up lever leads the needle by 30°, the vibrating shuttle swings
+  through the loop at the needle's bottom, and the feed dog moves the cloth only while the needle is out of it.
+- **Numbers from the same solve.** Treadle angle, band and balance wheel rpm, belt speed, needle height, take-up angle,
+  shuttle and feed phases, stitch length, stitch count, tension.
+- **Controls.** RUN and PAUSE, a speed slider (0–900 stitches a minute), a stitch-length slider (0–4 mm), PUMP (hold), presser
+  foot lift, RESET; drag the balance wheel to scrub the stitch; drag the machine to orbit; scroll to zoom.
+- **Idle tour.** After 25 s of quiet the page tours the drive chain with captions. Any input takes over at once.
+- **Deterministic.** A fixed 1/120 s simulation step: the same inputs give the same motion.
+- **Offline.** One HTML file with three.js and the fonts inlined. No network requests at run time.
 
 ## Controls
 
-| In game | |
+| Action | Control |
 |---|---|
-| Look at a console button (≤ 2.5 m) | highlights it: `[E] Inspect: <name>` |
-| `E` | inspect that subsystem / run / reset |
-| `E` on the same button | send it home |
-| `E` on another button | current part goes home, then the new one comes out |
-| `R` button (red) | reset from any state |
-| `▶` button (green) | RUN the machine for 6 s (from rest) |
-
-The web edition adds orbit and zoom, keys `1`–`0` for subsystems 1–10, `R` for reset, `Space` for run,
-and an auto tour after 30 s of quiet.
+| Open a part | click it, or press `1`–`9`, `0`, `Q W E T Y U` (pressing the open part again closes it) |
+| RUN / PAUSE | `Space` or the RUN button |
+| Speed | drag the speed slider; hold PUMP (or `P`) to pump faster |
+| Stitch length | drag the stitch-length slider |
+| Presser foot | `L` or the PRESSER button |
+| Scrub the stitch | drag the balance wheel |
+| Orbit / zoom | drag the machine / scroll |
+| Reset | `R`, `Esc` or RESET |
+| Auto tour | after 25 s of quiet, or the AUTO TOUR button |
 
 ## Architecture
 
 ```
-tools/generate.py ──► vox/*.vox (55 models, 1 cm voxels)
-  (dimensions →       prefab.xml (18 bodies, tags, anchors, lights)
-   voxels; budgets)   exhibit.lua  ← only the GENERATED GEOMETRY block (centres, pivots, kinematics)
-                      docs/assets/geometry.{bin,json} (web edition)
-
-exhibit.lua  ── CONFIG · SUBSYSTEMS · pose(t) · state machine · RUN kinematics · UI
-tools/run_tests.py ── runs exhibit.lua under Lua 5.1 + tools/stub_api.lua with the real prefab
-                   ── writes docs/assets/exhibit.json (CONFIG/SUBSYSTEMS/GEOM) for the web edition
-docs/viewer.js ── line-for-line port of exhibit.lua's pose functions and state machine (three.js)
+sims/kit/                      the skill's runtime, warm-up, stage helpers (vendored)
+sims/build.mjs                 esbuild bundle → teardown-out/dist/<name>.html (fonts and three inlined)
+sims/capture.mjs               frame-accurate capture to mp4 or stills (Playwright)
+sims/singer-treadle-shared/    the machine
+  kin.js                       pure kinematics: solve(state) → every pose and panel number
+  subsystems.js                the sixteen parts: ids, texts, facts, open views, callouts
+  machine.js                   procedural geometry, posing, presentation and ghosting
+  presenter.js                 which part is on display and how far (pure timeline)
+  script.js                    the shared script: events, speed, captions (tour and film)
+  stage.js                     studio, lights, shadows, occlusion pass, warm-up
+  console.js                   the 1600 × 900 overlay: numbers, strip, card, callouts, brass plate
+  live.js                      the page: fixed-step simulation, input, tour, quality tiers
+  film.js                      the film: render(t) as a pure function of time
+  materials.js                 materials and canvas textures (oak grain, belt, gold decal)
+  score.py                     the procedural score on the film's timeline
+sims/singer-treadle-live/      entry point of the page
+sims/singer-treadle-film/      entry point of the film (timeline.json written by tools/timeline.mjs)
+sfx/, run_sfx.py               the sound engine (vendored): pure-Python synthesis, −14 LUFS mastering
+tools/                         release (copies the page), timeline, film, screenshots, crosscheck
+tests/                         Playwright suite and the manual checklist
+docs/                          the Pages site, CONVENTIONS, PLAN, research notes, review sheets, screenshots
 ```
 
-| File | Role |
-|---|---|
-| `info.txt`, `spawn.txt` | mod metadata; spawn entry `prefab.xml : Exhibits/Singer Treadle Exhibit` |
-| `prefab.xml` | generated. `<script>` wraps the exhibit so `Find*` sees only this instance |
-| `exhibit.lua` | the exhibit: `CONFIG` and `SUBSYSTEMS` tables at the top, then poses, state machine, callbacks |
-| `vox/`, `snd/` | generated models and sounds |
-| `tools/` | generator, sound synth, cross-check, stub API, test suite, screenshot capture |
-| `docs/` | GitHub Pages site + `CONVENTIONS.md`, `PLAN.md`, `README.md` (modding guide) |
-| `tests/CHECKLIST.md` | manual in-game acceptance checklist |
+Design notes: [docs/CONVENTIONS.md](docs/CONVENTIONS.md) (what the skill does, with quoted lines and the deviations) and
+[docs/PLAN.md](docs/PLAN.md) (dimensions, timing, budgets, verification).
 
-Design decisions are documented in [docs/CONVENTIONS.md](docs/CONVENTIONS.md) (what the reference
-repository does and the fallbacks used) and [docs/PLAN.md](docs/PLAN.md) (dimensions, timing,
-budgets).
+## Build, test and film
 
-## Build
-
-Requirements: Python 3.10+. For the tests: `pip install lupa` (Lua 5.1 runtime). For sounds: `ffmpeg`.
-For screenshots: Node 20+.
+Requirements: Node.js 20 or newer. For the film: `ffmpeg` on the PATH and Python 3 (standard library only).
 
 ```bash
-python tools/build.py              # generate → crosscheck → 30 offline checks → sync site assets
-python tools/build.py --sounds     # also re-synthesise snd/*.ogg
-cd tools/screens && npm install && node capture.mjs   # re-capture docs/screenshots + preview.jpg
+npm install && npx playwright install chromium   # dependencies and the test browser
+npm run build                                    # dist/singer-treadle.html (and docs/exhibit.html)
+npm test                                         # build, crosscheck, Playwright suite
+npm run film                                     # the 88 s film with its score → docs/assets/film.mp4
+npm run screenshots                              # docs/screenshots/*.png from the live page
 ```
 
-To preview the website locally: `python -m http.server -d docs 8000` → <http://localhost:8000>.
+To preview the site locally: `python -m http.server -d docs 8000`, then open <http://localhost:8000>.
 
-## Roadmap
+## Adding a seventeenth part
 
-See [ROADMAP.md](ROADMAP.md). Highlights: in-game screenshots and tuning in Teardown itself, an
-optional slow-motion stitch-formation view, labels on the console's engraved strips.
+1. Add an entry to `SUBSYSTEMS` in `sims/singer-treadle-shared/subsystems.js` (id, button, name, pivot, open view, callouts,
+   connections, text, fact): about 25 lines.
+2. Add its geometry as a block in `sims/singer-treadle-shared/machine.js` (inside `createMachine`, the group is `G[id]`): about
+   10–30 lines. Add its posing in `update()` if it moves.
+3. Add a key to `BUTTON_KEYS` in `subsystems.js` (a seventeenth key is not on the keyboard row, so it may be a shifted key).
+4. Add a beat to `EVENTS` in `script.js` if it should appear on the tour, and a caption if it needs one.
+5. Run `npm test`: `tools/crosscheck.mjs` fails until the button, the tour beat, the text and the screenshot all exist.
 
-## Licence
+## Credits and licences
 
-MIT, see [LICENSE](LICENSE). Singer is a trademark of its owner; this is an independent educational
-model, not affiliated with or endorsed by The Singer Company or Tuxedo Labs.
+MIT, see [LICENSE](LICENSE). The teardown skill's kit, capture and sound engine are from
+[whaleyxbt/claude-motion](https://github.com/whaleyxbt/claude-motion) (MIT) through the skill; the recorded samples are CC0
+from Freesound (see `sfx/samples/SOURCES.md`). Notices: [THIRD_PARTY.md](THIRD_PARTY.md).
+
+Singer is a trademark of its owner. This is an independent educational model, not affiliated with or endorsed by The Singer Company.

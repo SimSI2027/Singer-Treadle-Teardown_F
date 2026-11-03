@@ -2,26 +2,34 @@
 
 All notable changes. Dates are UTC.
 
-## 1.0.0 (2026-11-01)
+## Unreleased: rebuilt on the elvarofficial/teardown skill
 
-- **Exhibit**: 16 subsystems as 16 static bodies built from 55 generated `.vox` models (1 cm voxels,
-  ~96 k voxels), a brass lectern console with 16 numbered buttons plus RESET and RUN, a plinth, and a
-  display dais with two warm lamps.
-- **Choreography**: per-subsystem multi-leg exit paths, a rigid group slide, a Bezier presentation
-  with slerped display poses and ±12° sway. Frame mode for the head and cabinet (other parts make
-  way first). Exact time-reversed closing with snap-to-home.
-- **Articulation on display**: drawers, drop-front, feed-mechanism spread, shuttle race.
-- **RUN**: 6 s demonstration driven by one input (band-wheel angle). Treadle ±12° by circle
-  intersection, rigid pitman, 2.5:1 belt ratio, needle bar, shuttle, feed dog. Ends exactly at home.
-- **UI**: title line, hover prompt, info panel with function, connections and a period fact for every subsystem.
-- **Sounds**: procedurally synthesised brass click and mechanical slide (`tools/make_sounds.py`).
-- **Verification**: `tools/run_tests.py`, 30 checks running the real Lua under Lua 5.1, including
-  voxel-exact path collision checks; `tools/crosscheck.py` for XML↔Lua tags.
-- **Web edition and site**: three.js port of the exhibit on GitHub Pages, with an interactive
-  subsystem gallery, architecture and state-machine diagrams, and 26 auto-captured screenshots.
-- **Docs**: `CONVENTIONS.md` (reference-repo inspection, fallbacks, deviations), `PLAN.md`, modding guide.
+The project was rebuilt as an interactive three.js simulator of an antique Singer treadle sewing machine. The earlier version
+was a Teardown video-game mod; it was removed and its reusable research was archived (`docs/research/`). Git history keeps
+every removed file (commit `1ff9b38` is the last commit that has them).
 
-## 0.1.0 (2026-11-01)
+### Removed (Teardown-game mod artifacts)
 
-- Repository created; reference repository inspected (it is the web "teardown" exhibit kit, not a
-  Teardown game mod), conventions documented.
+| Files | Why removed |
+|---|---|
+| `exhibit.lua`, `prefab.xml`, `info.txt`, `spawn.txt` | Teardown game script, prefab, mod metadata and spawn entry. The game API they call has no place in a browser simulator. |
+| `vox/` (55 `.vox` voxel models) | Voxel assets for the game's engine. The new machine is procedural three.js geometry. |
+| `snd/` (2 `.ogg` cues) | Brass click and slide sounds for the game. Replaced by the skill's procedural score. |
+| `tools/` (generator, Lua stub API, Lua test runner, XML↔Lua crosscheck, make_sounds, the web port's screenshot script) | Built for the game's file formats. Replaced by the skill's build and capture pipeline and this repo's `tools/`. Only ignored `node_modules` from the screenshot tool remained on disk and was deleted. |
+| `tests/CHECKLIST.md` | An in-game acceptance checklist for the game. Replaced by `tests/CHECKLIST.md` for the browser exhibit. |
+| `docs/app.js`, `docs/viewer.js`, `docs/index.html`, `docs/style.css`, `docs/README.md`, `docs/assets/` | The web port of the voxel exhibit (exhibit.json, geometry.bin/json, test-report.json, copied CHANGELOG/ROADMAP) and the modding guide. The Pages site is rebuilt from the skill's page. |
+
+### Archived to `docs/research/` (reusable, kept for reference)
+
+- `docs/research/mod-subsystem-notes.md`: the sixteen subsystem texts and facts from the mod's `SUBSYSTEMS` table. Re-verify before reuse.
+- `docs/research/mod-PLAN.md`, `docs/research/mod-CONVENTIONS.md`: the mod's plan and conventions (written for the wrong premise).
+- `docs/research/voxel-mod-screenshots/`: the 26 renders of the voxel models and `preview.jpg`. These show the old voxel machine, not the new one.
+
+### Added
+
+- The skill's kit, byte-identical to `~/.claude/skills/teardown`: `sims/kit/`, `sims/build.mjs`, `sims/capture.mjs`, `sims/beats.py`,
+  `sfx/`, `paths.mjs`, `run_sfx.py`, `sheet.mjs`, `wave.mjs`. Licence: `THIRD_PARTY/teardown-skill-LICENSE.txt`.
+- `sims/singer-treadle-shared/`: the machine (kinematics, geometry, presenter, script, console, stage, live page logic, film logic).
+- `sims/singer-treadle-live/` and `sims/singer-treadle-film/`: the two entry points.
+- `docs/CONVENTIONS.md` (what the skill does, with quoted files and lines) and `docs/PLAN.md` (dimensions, timing, budgets, verification).
+- Research notes: `docs/research/linkage-search.md` (the treadle geometry), `docs/research/source-notes.md` (how each fact was checked).
