@@ -49,3 +49,33 @@ Plan for round 3: frame these three parts closer (a size override for the feed m
 thicken the thread tube. The timing does not change: it matches the script. Then read the three tiles again.
 
 Caveat: these sheets are read at reduced scale. A full-size check of each beat (`--still T`) is still to do.
+
+## Round 3: the film after the round-2 fixes (`film-r3c-t18.5.png`, `-t43.0.png`, `-t62.5.png`)
+
+Three beats were read at full size, from the encoded film: 18.5 s (pitman rod), 43.0 s (needle assembly) and 62.5 s (thread
+path). Round 2's three weak beats were then fixed. Along the way a bug that affected several parts was found and fixed.
+
+Fixed:
+
+1. **Moving rods were not drawn (a bug).** The needle bar, the needle, the take-up lever, the pitman rod, the arm-shaft link and
+   the thread segments all stretch between two points. Their direction was computed by subtracting plain arrays, which gives NaN,
+   so none of them was drawn. They are drawn now: the pitman runs from the treadle joint up to the crank pin, the needle assembly
+   shows its bar, needle and take-up lever, and the thread path is continuous. The Playwright suite did not catch this, because it
+   checks the solver and the group transforms, not what is drawn; the link transforms are now checked to be finite.
+2. **Shuttle.** The callout that said "Race" pointed at the iron carrier block. It reads "Carrier: holds the shuttle in its race".
+3. **Feed mechanism.** The dog was nickel on the pale ground and washed out. It is dark iron now, with larger teeth.
+4. **Thread path.** The links were too thin to read. They are drawn about 5.6 mm across, against roughly 0.3 mm for real thread,
+   so the route reads. This is a deliberate exaggeration for legibility.
+5. **Captions were centred in 640 px, not on the screen.** The skill's stylesheet caps a `.cap` element at 96 rem, which is 640 px at
+   this viewport, and our captions reused that class name. The captions are now `capbox`, full width.
+6. **The tour button and chip in the film.** "TOURING · PRESS ANY KEY" overflowed its button, and an empty tour chip showed at the top
+   centre. The film no longer shows the tour state; on the live page the button reads "TOURING".
+7. **An empty hint box** showed at the bottom centre. It is hidden when there is no hint.
+
+Still open:
+
+- At film scale the feed dog is small, and its teeth are not resolved in the frame. A dedicated close-up still would show them.
+- The frames are read from the encoded file at 1920 px wide, not at the native resolution of the live page.
+
+Review record: three rounds. Round 1 read the pre-fix sheet; round 2 read the encoder's output; round 3 (this round) read the final
+encoded frames at full size. The film is 75.1 s, 1920 × 1080, at 60 fps, with the score at −14 LUFS.

@@ -41,6 +41,18 @@ every removed file (commit `1ff9b38` is the last commit that has them).
 - `tests/exhibit.spec.mjs` (eight Playwright tests) and `tests/CHECKLIST.md` (the manual checks).
 - `docs/review/`: the review sheet of the film's beats (round 1) and `NOTES.md` with what was read and changed.
 
+### Fixed in review
+
+- **Moving rods were not drawn.** The needle bar, the needle, the take-up lever, the pitman rod, the arm-shaft link and the thread
+  segments stretch between two points, and their direction was computed from plain arrays, which gives NaN. `machine.js` `setLink`
+  now takes the differences per axis. The Playwright suite did not catch it; the review of the encoded film did.
+- **Captions were centred in 640 px.** The skill's stylesheet caps `.cap` at 96 rem (640 px at this viewport). Our captions are now
+  `capbox`, full width.
+- **The film's tour button overflowed** ("TOURING · PRESS ANY KEY"), an empty tour chip showed at the top, and an empty hint box showed
+  at the bottom. Fixed in `film.js` and `console.js`.
+- **The shuttle's "Race" callout** pointed at the carrier block. It now reads "Carrier".
+- **The feed dog** was nickel on the pale ground; it is dark iron now, with larger teeth. **The thread links** are thicker.
+
 ### Verified in this session
 
 - `npm run build`: the live page builds at 0.99 MB; the film page builds too.
@@ -60,3 +72,5 @@ every removed file (commit `1ff9b38` is the last commit that has them).
 - Two period facts (Elias Howe's 1846 needle, the Clark instalment attribution) are stated with their status in the research note.
 - The film and the tour use a simplified model: the shuttle is a boat in a race, the thread is a tube through its guides, and the
   feed dog is a plain toothed bar. The geometry is procedural, not scanned from a real machine.
+- The thread is drawn about 5.6 mm across, against roughly 0.3 mm for real thread, so that the route reads. This is a deliberate
+  exaggeration.

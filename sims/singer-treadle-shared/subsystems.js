@@ -59,7 +59,7 @@ export const SUBSYSTEMS = [
     cam: {az: 0, el: 40, d: 0.5, t: [0, 0.93, 0.34]},
     callouts: [
       {label: 'Shuttle', sub: 'oscillates in the race', at: [-0.09, 0.8, -0.02]},
-      {label: 'Race', sub: 'the curved track it swings in', at: [-0.06, 0.8, -0.02]},
+      {label: 'Carrier', sub: 'holds the shuttle in its race', at: [-0.06, 0.8, -0.02]},
       {label: 'Slide plate', sub: 'removed for access', at: [-0.07, 0.79, 0.07]},
     ],
     connects: ['needle_assembly', 'bobbin', 'gear_train', 'crankshaft'],
@@ -138,7 +138,7 @@ export const SUBSYSTEMS = [
   },
   {
     id: 'gear_train', n: 10, button: 'FEED', name: 'Feed Mechanism',
-    mode: 'move', pivot: [-0.09, 0.8, -0.02], rot: [-55, 0, 0], scale: 2.6, out: [0.0, 0.0, 0.14],
+    mode: 'move', pivot: [-0.09, 0.8, -0.02], rot: [-55, 0, 0], scale: 3.2, out: [0.0, 0.0, 0.14],
     hint: 'exploded so the cams are visible',
     cam: {az: 0, el: 30, d: 0.55, t: [0, 0.93, 0.34]},
     callouts: [

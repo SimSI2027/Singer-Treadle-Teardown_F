@@ -85,7 +85,7 @@ export function makeFilm() {
           hoverId: null,
           callouts,
           caption: captionAt(t, FILM_CAPTIONS),
-          tour: true,
+          tour: false,
           hintText: '',
           curves,
           onGo: () => {},

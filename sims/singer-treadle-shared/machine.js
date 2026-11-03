@@ -54,15 +54,19 @@ function linkMesh(owner, r, mat) {
   return m;
 }
 const _d = new THREE.Vector3();
+/** Stretches the unit cylinder m from point a to point b (both [x, y, z]). Differences are taken per axis: arrays have no .x. */
 function setLink(m, a, b) {
-  _d.subVectors(b, a);
-  const len = _d.length();
+  const dx = b[0] - a[0];
+  const dy = b[1] - a[1];
+  const dz = b[2] - a[2];
+  const len = Math.hypot(dx, dy, dz);
   m.position.set((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2);
-  if (len < 1e-9) {
+  if (!(len > 1e-9)) {
     m.scale.set(1, 1e-6, 1);
     return;
   }
-  m.quaternion.setFromUnitVectors(UP, _d.divideScalar(len));
+  _d.set(dx / len, dy / len, dz / len);
+  m.quaternion.setFromUnitVectors(UP, _d);
   m.scale.set(1, len, 1);
 }
 const V = (p) => [p[0], p[1], p[2]];
@@ -376,10 +380,10 @@ export function createMachine(M) {
     }
     b.flush();
     dyn.thread = [];
-    for (let i = 0; i < 5; i++) dyn.thread.push(linkMesh(g, 0.0011, M.thread));
+    for (let i = 0; i < 5; i++) dyn.thread.push(linkMesh(g, 0.0028, M.thread));
     dyn.beads = [];
     for (let i = 0; i < 4; i++) {
-      const bead = new THREE.Mesh(new THREE.SphereGeometry(0.0021, 8, 6), M.gold);
+      const bead = new THREE.Mesh(new THREE.SphereGeometry(0.0028, 8, 6), M.thread);
       g.add(bead);
       dyn.beads.push(bead);
     }
@@ -399,8 +403,8 @@ export function createMachine(M) {
     g.add(dyn.dog);
     const db = batcher(dyn.dog);
     // the dog sits at its home (x, z); the solver moves it forward and back by its stitch length
-    db.add(new THREE.BoxGeometry(0.022, 0.004, 0.09), M.nickel, mtx(DIM.feed.x, 0, DIM.feed.z));
-    for (let i = 0; i < 4; i++) db.add(new THREE.BoxGeometry(0.006, 0.004, 0.006), M.nickel, mtx(DIM.feed.x, 0.003, DIM.feed.z - 0.03 + i * 0.02));
+    db.add(new THREE.BoxGeometry(0.022, 0.004, 0.09), M.iron, mtx(DIM.feed.x, 0, DIM.feed.z));
+    for (let i = 0; i < 5; i++) db.add(new THREE.BoxGeometry(0.011, 0.006, 0.011), M.iron, mtx(DIM.feed.x, 0.004, DIM.feed.z - 0.036 + i * 0.018));
     db.flush();
   }
 
@@ -493,9 +497,12 @@ export function createMachine(M) {
     sizes[s.id] = Math.max(v.x, v.y, v.z, 0.02);
   }
   // the shuttle's slide plate is 14 cm long and would make the framing drift back; the race and the boat are the subject
-  sizes.shuttle = 0.07;
+  sizes.shuttle = 0.05;
   // the treadle's cross-bar spans the stand (0.88 m); the foot plate and the lever are the subject
   sizes.treadle = 0.5;
+  // the feed mechanism's bottom shaft is 0.44 m; the dog and its cams are the subject. The thread path is framed on the thread.
+  sizes.gear_train = 0.09;
+  sizes.thread_guide_path = 0.2;
 
   // ---------------------------------------------------------- the stance of everything else: the needle plate is in the head
   for (const s of SUBSYSTEMS) {

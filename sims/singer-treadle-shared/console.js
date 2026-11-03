@@ -50,10 +50,10 @@ const CSS = `
 .sg .call{position:absolute;white-space:nowrap;transform:translate(-50%,-100%)}
 .sg .call b{display:block;font-size:11px;font-weight:600;background:rgba(255,255,255,.92);padding:1px 4px;border-left:2px solid ${C.red}}
 .sg .call span{display:block;font-size:8px;letter-spacing:1.1px;color:${C.mute};text-transform:uppercase;background:rgba(255,255,255,.92);padding:0 4px 1px;margin-left:0}
-.sg .cap{position:absolute;left:0;right:0;top:618px;text-align:center}
-.sg .cap b{display:inline-block;font-size:21px;font-weight:700;letter-spacing:-.2px;background:rgba(255,255,255,.9);padding:4px 12px 2px;border:1px solid ${C.line}}
-.sg .cap span{display:block;margin-top:4px;font-size:11px;color:#2b2e33}
-.sg .cap span b{font-size:11px}
+.sg .capbox{position:absolute;left:0;right:0;top:618px;text-align:center;max-width:none}
+.sg .capbox b{display:inline-block;font-size:21px;font-weight:700;letter-spacing:-.2px;background:rgba(255,255,255,.9);padding:4px 12px 2px;border:1px solid ${C.line}}
+.sg .capbox span{display:block;margin-top:4px;font-size:11px;color:#2b2e33}
+.sg .capbox span b{font-size:11px}
 .sg .tourchip{position:absolute;left:800px;top:20px;transform:translateX(-50%);display:flex;align-items:center;gap:7px;height:21px;padding:0 11px;border:1px solid ${C.line};background:rgba(255,255,255,.95);font:600 8.6px Inter,sans-serif;letter-spacing:1.3px;white-space:nowrap;cursor:pointer;pointer-events:auto}
 .sg .tourchip i{display:block;width:6px;height:6px;border-radius:50%;background:${C.red}}
 .sg .tourchip.on i{animation:sgblink 1.2s steps(2) infinite}
@@ -143,7 +143,7 @@ export function createConsole(app) {
   // ---------------------------------------------------------- callouts (SVG leaders and labels) and the captions
   const callSvg = add(`<svg style="position:absolute;inset:0;overflow:visible" width="1600" height="900"></svg>`);
   const callG = add(`<div style="position:absolute;inset:0"></div>`);
-  const cap = add(`<div class="cap" style="display:none"></div>`);
+  const cap = add(`<div class="capbox" style="display:none"></div>`);
   const tourChip = add(`<div class="tourchip" style="display:none"></div>`);
   const hint = add(`<div class="hint"></div>`);
 
@@ -235,9 +235,10 @@ export function createConsole(app) {
     btn.pump.classList.toggle('on', !!f.pumping);
     btn.lift.textContent = f.presserUp > 0.5 ? 'PRESSER · UP' : 'PRESSER · DOWN';
     btn.lift.classList.toggle('on', f.presserUp > 0.5);
-    btn.tour.textContent = f.tour ? 'TOURING · PRESS ANY KEY' : 'AUTO TOUR';
+    btn.tour.textContent = f.tour ? 'TOURING' : 'AUTO TOUR';
     btn.tour.classList.toggle('on', !!f.tour);
     tourChip.style.display = f.tour ? 'flex' : 'none';
+    tourChip.textContent = 'AUTO TOUR · ANY INPUT TAKES OVER';
 
     // keys: the open one lit; the hovered one outlined
     for (const s of SUBSYSTEMS) {
@@ -302,6 +303,7 @@ export function createConsole(app) {
     } else cap.style.display = 'none';
 
     hint.textContent = f.hintText || '';
+    hint.style.display = f.hintText ? 'block' : 'none';
   }
 
   // the buttons and the plate's hit areas are wired by the page through the returned handles

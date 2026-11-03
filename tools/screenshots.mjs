@@ -14,6 +14,9 @@ const req = createRequire(path.join(ROOT, 'package.json'));
 const {chromium} = req('playwright');
 const page_ = path.join(ROOT, 'teardown-out', 'dist', 'singer-treadle-live.html');
 const OUT = path.join(ROOT, 'docs', 'screenshots');
+// --only=id1,id2 refreshes just those parts' screenshots (the overview, running, hero and tour are then left alone)
+const onlyArg = process.argv.find((a) => a.startsWith('--only='));
+const only = onlyArg ? onlyArg.slice('--only='.length).split(',') : null;
 if (!fs.existsSync(page_)) {
   console.error(`missing ${page_}: run npm run build first`);
   process.exit(1);
@@ -33,6 +36,7 @@ const open = async (q) => {
 };
 
 // the overview at rest (the first frame, with the console)
+if (!only) {
 await open('?notour');
 await page.waitForTimeout(1200);
 await page.screenshot({path: path.join(OUT, 'overview.png')});
@@ -51,9 +55,11 @@ await page.waitForTimeout(2600);
 await page.screenshot({path: path.join(OUT, 'hero.png')});
 await page.evaluate(() => window.SINGER.resetAll());
 await page.waitForTimeout(1500);
+}
 
-// each part on display
-for (const id of IDS) {
+// each part on display (with --only, the page is opened here)
+if (only) await open('?notour');
+for (const id of only ?? IDS) {
   await page.evaluate((i) => window.SINGER.openPart(i), id);
   await page.waitForFunction((i) => {
     const s = window.SINGER.presentNow();
@@ -66,10 +72,12 @@ for (const id of IDS) {
 }
 
 // the idle tour, with a caption on screen
+if (!only) {
 await open('?idle=0.5');
 await page.waitForFunction(() => window.SINGER.tour.on === true, null, {timeout: 20000});
 await page.waitForTimeout(9000);
 await page.screenshot({path: path.join(OUT, 'tour.png')});
+}
 
 fs.writeFileSync(path.join(OUT, 'manifest.json'), JSON.stringify({ids: IDS, files: fs.readdirSync(OUT).filter((f) => f.endsWith('.png'))}, null, 1));
 await browser.close();
