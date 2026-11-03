@@ -8,12 +8,12 @@ import {createConsole} from './console.js';
 import {solve, cycleCurves, DIM} from './kin.js';
 import {makeMaterials} from './materials.js';
 import {stateAt} from './presenter.js';
-import {EVENTS, DURATION, machineTable, captionAt} from './script.js';
+import {FILM_EVENTS, FILM_CAPTIONS, FILM_DURATION, FILM_RPM, machineTable, captionAt} from './script.js';
 import {cameraFor} from './live.js';
 import {BY_ID} from './subsystems.js';
 
 export const DEFAULTS = {
-  duration: DURATION,
+  duration: FILM_DURATION,
   fps: 60,
   theme: 'light',
   hud: {enabled: false, title: 'singer-treadle', subtitle: ''},
@@ -28,7 +28,7 @@ html,body{margin:0;background:#ecedef;overflow:hidden}
 `;
 
 // the balance wheel's table: stepped at 1/240 s from the speed script (pure, computed once)
-const TABLE = machineTable(1 / 240, DURATION + 1);
+const TABLE = machineTable(FILM_RPM, FILM_DURATION, 1 / 240);
 const DT = 1 / 240;
 export function thetaAt(t) {
   const u = Math.max(0, Math.min(TABLE.length - 2, t / DT));
@@ -61,7 +61,7 @@ export function makeFilm() {
       render(t) {
         const {theta, rpm} = thetaAt(t);
         const sol = solve({theta, rpm, stitchMM: DIM.feed.S, presserUp: 0, tension: 0.5});
-        const state = stateAt(t, EVENTS, {id: null, p: 0});
+        const state = stateAt(t, FILM_EVENTS, {id: null, p: 0});
         machine.update(sol, {id: state.id ?? null, p: state.p ?? 0});
         stage.frame(cameraFor(state, orbit, t, true, machine.sizes));
         let callouts = null;
@@ -84,7 +84,7 @@ export function makeFilm() {
           openP: state.p ?? 0,
           hoverId: null,
           callouts,
-          caption: captionAt(t),
+          caption: captionAt(t, FILM_CAPTIONS),
           tour: true,
           hintText: '',
           curves,

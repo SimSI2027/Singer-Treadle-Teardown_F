@@ -278,13 +278,15 @@ export function createConsole(app) {
     let ch = '';
     const o = f.openP > 0.6 ? open : null;
     if (o && f.callouts) {
-      f.callouts.forEach((c, i) => {
-        if (!c.at) return;
+      // label positions: each beside its anchor, then pushed apart so no two labels overlap (34 px minimum)
+      const placed = f.callouts.map((c, i) => {
         const [ax, ay] = c.at;
-        const lx = ax < 800 ? 300 + (i % 3) * 0 : 0;
         const side = ax < 800 ? -1 : 1;
-        const lbX = Math.min(1180, Math.max(340, ax + side * (120 + i * 6)));
-        const lbY = Math.max(140, Math.min(560, ay - 40 + i * 58));
+        return {c, i, ax, ay, side, lbX: Math.min(1180, Math.max(340, ax + side * (120 + i * 6))), lbY: Math.max(140, Math.min(560, ay - 40 + i * 58))};
+      }).filter((p) => p.c.at);
+      placed.sort((a, b) => a.lbY - b.lbY);
+      for (let k = 1; k < placed.length; k++) placed[k].lbY = Math.max(placed[k].lbY, placed[k - 1].lbY + 34);
+      placed.forEach(({c, i, ax, ay, side, lbX, lbY}) => {
         lh += `<polyline points="${ax.toFixed(1)},${ay.toFixed(1)} ${(lbX - side * 6).toFixed(1)},${(lbY + 14).toFixed(1)} ${lbX.toFixed(1)},${(lbY + 14).toFixed(1)}" fill="none" stroke="${C.ink}" stroke-width=".9" opacity=".7"/><circle cx="${ax.toFixed(1)}" cy="${ay.toFixed(1)}" r="2.6" fill="${C.red}"/>`;
         ch += `<div class="call" style="left:${lbX.toFixed(1)}px;top:${(lbY + 12).toFixed(1)}px;opacity:${Math.min(1, f.openP).toFixed(2)};transform:translate(${side < 0 ? '0' : '-100%'},-100%)"><b>${c.label}</b><span>${c.sub}</span></div>`;
       });

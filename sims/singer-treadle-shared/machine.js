@@ -492,6 +492,10 @@ export function createMachine(M) {
     box.getSize(v);
     sizes[s.id] = Math.max(v.x, v.y, v.z, 0.02);
   }
+  // the shuttle's slide plate is 14 cm long and would make the framing drift back; the race and the boat are the subject
+  sizes.shuttle = 0.07;
+  // the treadle's cross-bar spans the stand (0.88 m); the foot plate and the lever are the subject
+  sizes.treadle = 0.5;
 
   // ---------------------------------------------------------- the stance of everything else: the needle plate is in the head
   for (const s of SUBSYSTEMS) {

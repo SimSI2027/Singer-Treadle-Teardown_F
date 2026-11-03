@@ -9,7 +9,7 @@ import {createConsole, SPM_MAX} from './console.js';
 import {solve, cycleCurves, DIM} from './kin.js';
 import {SUBSYSTEMS, BY_ID, BUTTON_KEYS, IDS, DISPLAY, OVERVIEW} from './subsystems.js';
 import {stateAt, build} from './presenter.js';
-import {EVENTS, CAPTIONS, advance, rpmTargetAt, captionAt, overviewAz, DURATION} from './script.js';
+import {TOUR_EVENTS, TOUR_CAPTIONS, TOUR_DURATION, TOUR_RPM, advance, rpmTargetAt, captionAt, overviewAz} from './script.js';
 import {makeMaterials} from './materials.js';
 
 export const W = 1600;
@@ -129,8 +129,10 @@ export async function runLive({idle = IDLE_DEFAULT, tour: startTour = true} = {}
   addEventListener('resize', fit);
 
   // ---------------------------------------------------------- the presenter, live and the tour
+  // the tour's own clock: it loops over its script
+  const tourT = () => (S.t - tour.t0) % TOUR_DURATION;
   const presentNow = () => {
-    if (tour.on) return stateAt(S.t - tour.t0, EVENTS, {id: null, p: 0});
+    if (tour.on) return stateAt(tourT(), TOUR_EVENTS, {id: null, p: 0});
     return stateAt(S.t, live.events, live.initial);
   };
   const touch = () => {
@@ -139,12 +141,12 @@ export async function runLive({idle = IDLE_DEFAULT, tour: startTour = true} = {}
   };
   const takeOver = () => {
     if (!tour.on) return;
-    const st = stateAt(S.t - tour.t0, EVENTS, {id: null, p: 0});
+    const st = stateAt(tourT(), TOUR_EVENTS, {id: null, p: 0});
     tour.on = false;
     live.initial = {id: st.id ?? null, p: st.p ?? 0};
     live.events = [];
     // keep the speed the tour had reached: the wheel carries on from there, no jump
-    S.target = rpmTargetAt(S.t - tour.t0);
+    S.target = rpmTargetAt(tourT(), TOUR_RPM);
     S.presserTarget = 0;
     orbit.az = 0;
     orbit.el = 0;
@@ -358,7 +360,7 @@ export async function runLive({idle = IDLE_DEFAULT, tour: startTour = true} = {}
       if (idleFor > idle) startTourNow();
     }
     // the speed: the tour's script, or the operator's target; pumping lifts it while held
-    let target = tour.on ? rpmTargetAt(S.t - tour.t0) : S.target;
+    let target = tour.on ? rpmTargetAt(tourT(), TOUR_RPM) : S.target;
     if (S.pumping) target = Math.max(target, 600);
     if (S.homing) target = 0;
     const a = advance({theta: S.theta, rpm: S.rpm}, h, target);
@@ -414,7 +416,7 @@ export async function runLive({idle = IDLE_DEFAULT, tour: startTour = true} = {}
     const state = presentNow();
     const sol = solve({theta: S.theta, rpm: S.rpm, stitchMM: S.stitchMM, presserUp: S.presserUp, tension: S.tension});
     machine.update(sol, {id: state.id ?? null, p: state.p ?? 0});
-    const cam = cameraFor(state, orbit, tour.on ? S.t - tour.t0 : 0, tour.on, machine.sizes);
+    const cam = cameraFor(state, orbit, tour.on ? tourT() : 0, tour.on, machine.sizes);
     stage.frame(cam);
 
     // callouts: the presented part's labels, projected into the layout
@@ -429,7 +431,7 @@ export async function runLive({idle = IDLE_DEFAULT, tour: startTour = true} = {}
         return {label: c.label, sub: c.sub, at: [p.x, p.y]};
       });
     }
-    const cap = tour.on ? captionAt(S.t - tour.t0) : null;
+    const cap = tour.on ? captionAt(tourT(), TOUR_CAPTIONS) : null;
     ui.update({
       sol,
       running: S.target > 0 || S.rpm > 5,

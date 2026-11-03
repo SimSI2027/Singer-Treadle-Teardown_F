@@ -96,9 +96,9 @@ export const SUBSYSTEMS = [
   },
   {
     id: 'treadle', n: 7, button: 'TREADLE', name: 'Treadle',
-    mode: 'move', pivot: [0.44, 0.05, -0.02], rot: [-20, 0, 0], scale: 1.5, out: [0.0, -0.05, 0.1],
+    mode: 'move', pivot: [0.44, 0.05, -0.02], rot: [-15, 0, 0], scale: 1.4, out: [0.0, -0.05, 0.1],
     hint: 'tilted 20°, rocking',
-    cam: {az: 18, el: 10, d: 0.95, t: [0, 0.93, 0.34]},
+    cam: {az: 0, el: 38, d: 0.95, t: [0, 0.93, 0.34]},
     callouts: [
       {label: 'Treadle', sub: 'rocks about 24°, end to end', at: [0.44, 0.05, 0.1]},
       {label: 'Pivot rod', sub: 'on the stand\'s side arm', at: [0.44, 0.05, -0.02]},

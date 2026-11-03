@@ -190,7 +190,7 @@ The iteration record is in `docs/review/` (one sheet and one note per round).
 5. **Captions.** Added (see h); the skill's films have none.
 6. **Fixed-step live simulation.** The skill's live pages integrate real `dt`; the brief requires determinism, so the live page steps
    at 1/120 s (see b).
-7. **The tour and the film share one script** (`script.js`), so the tour and the 88 s film cannot disagree.
+7. **The tour and the film share one script** (`script.js`): the film is the drive chain and the stitch (75 s); the tour visits all sixteen parts (about 112 s). Both are built by one function, `lay()`, so they cannot disagree about a part's timing.
 8. **Procedural textures.** Oak grain, belt leather and the gold decal are drawn on canvases at load (`materials.js`), so nothing
    is fetched. No external images or fonts are loaded at run time.
 9. **Historical claims.** Each period fact in `subsystems.js` is checked against a source or written as a plain statement of how

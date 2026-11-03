@@ -1,62 +1,86 @@
-// The one script behind the idle tour and the film: presenter events (which part is on display), the balance wheel's
-// speed target, the captions, and the overview's orbit. Pure data and pure functions of time. The film renders this
-// timeline frame by frame; the live page plays it as the idle tour and hands control over on the first input.
+// The scripts behind the idle tour and the film. Each is a list of beats: a part comes forward (or the overview holds),
+// with a caption. The tour visits all sixteen parts; the film is the drive chain and the stitch, about 80 s. Both are
+// pure data and pure functions of time: the live page plays the tour, the film renders its script frame by frame.
 import {stateAt, build} from './presenter.js';
-
-export const DURATION = 88; // seconds; the film is this long, and the tour loops it
-
-// Presenter events: a part is opened, the presenter closes the last one first (see presenter.js).
-export const EVENTS = [
-  {t: 12.0, type: 'open', id: 'treadle'},
-  {t: 20.5, type: 'open', id: 'pitman_rod'},
-  {t: 28.0, type: 'open', id: 'belt_drive'},
-  {t: 35.5, type: 'open', id: 'drive_wheel'},
-  {t: 43.0, type: 'open', id: 'crankshaft'},
-  {t: 50.5, type: 'open', id: 'needle_assembly'},
-  {t: 58.0, type: 'open', id: 'shuttle'},
-  {t: 65.5, type: 'open', id: 'gear_train'},
-  {t: 73.0, type: 'open', id: 'thread_guide_path'},
-  {t: 80.5, type: 'close'},
-];
-
-// Balance-wheel speed targets, stitches a minute. The machine's speed follows the target with a lag (see advance()).
-export const RPM = [
-  {t: 0, rpm: 0},
-  {t: 6, rpm: 240},
-  {t: 60, rpm: 300},
-  {t: 76, rpm: 420},
-  {t: 82, rpm: 300},
-];
-
-// Captions: one card at a time, short phrases (SKILL.md: 1 s plus 0.25 s per word beyond three).
-export const CAPTIONS = [
-  {t0: 0.5, t1: 6.2, head: 'A SINGER TREADLE, c. 1880–1915', sub: 'Sixteen parts. One stitch per turn of the balance wheel.'},
-  {t0: 6.4, t1: 11.8, head: 'Pump the treadle', sub: 'The foot is where the power enters.'},
-  {t0: 12.2, t1: 19.9, head: 'The treadle rocks about 24°', sub: 'A four-bar linkage turns the rocking into rotation.'},
-  {t0: 20.7, t1: 27.6, head: 'The pitman rod', sub: 'It carries the treadle’s stroke to a crank pin on the band wheel.'},
-  {t0: 28.2, t1: 35.2, head: 'The leather belt', sub: 'The band wheel is 2.31 times the balance wheel: it drives it faster.'},
-  {t0: 35.7, t1: 42.7, head: 'The balance wheel', sub: 'One turn of it is one stitch.'},
-  {t0: 43.2, t1: 50.2, head: 'The arm shaft', sub: 'Its crank and a link drive the needle bar.'},
-  {t0: 50.7, t1: 57.7, head: 'The needle', sub: 'A 30 mm stroke. The take-up lever leads it by 30°.'},
-  {t0: 58.2, t1: 65.2, head: 'The vibrating shuttle', sub: 'Its point sweeps through the loop at the needle’s lowest point.'},
-  {t0: 65.7, t1: 72.7, head: 'The feed dog', sub: 'It moves the cloth only while the needle is out of it.'},
-  {t0: 73.2, t1: 80.2, head: 'The thread path', sub: 'Spool, tension, take-up lever, needle.'},
-  {t0: 80.7, t1: 87.5, head: 'Press a number to open a part', sub: 'Drag to orbit · scroll to zoom · keys 1–0, Q W E T Y U'},
-];
 
 const smooth = (x) => {
   const u = Math.min(1, Math.max(0, x));
   return u * u * u * (u * (u * 6 - 15) + 10);
 };
 
-/** Speed target at time t (stitches a minute): the last step at or before t. */
-export function rpmTargetAt(t) {
-  let v = RPM[0].rpm;
-  for (const r of RPM) if (t >= r.t) v = r.rpm;
+// Caption timing: 1 s for a short phrase plus 0.25 s per word beyond three (SKILL.md, review checklist).
+const captionSeconds = (head, sub = '') => Math.max(3.2, 1 + 0.25 * Math.max(0, (head + ' ' + sub).split(' ').length - 3));
+
+/** Lay the beats end to end from time 0. A beat is {id|null, head, sub, dur?}; id null means the overview holds. */
+function lay(beats) {
+  let t = 0;
+  const events = [];
+  const captions = [];
+  for (const b of beats) {
+    const dur = b.dur ?? captionSeconds(b.head, b.sub);
+    if (b.id) events.push({t, type: 'open', id: b.id});
+    else if (events.length) events.push({t, type: 'close'});
+    captions.push({t0: t + 0.25, t1: t + dur - 0.25, head: b.head, sub: b.sub ?? ''});
+    t += dur;
+  }
+  events.push({t, type: 'close'});
+  return {events, captions, duration: t};
+}
+
+// the drive chain, in order: treadle → pitman → band wheel → belt → balance wheel → arm shaft → needle → shuttle → feed → thread
+const CHAIN = [
+  {id: 'treadle', head: 'The treadle rocks about 24°', sub: 'A four-bar linkage turns the rocking into rotation.', dur: 6.6},
+  {id: 'pitman_rod', head: 'The pitman rod', sub: 'It carries the stroke to a crank pin on the band wheel.', dur: 6},
+  {id: 'belt_drive', head: 'The leather belt', sub: 'The band wheel is 2.31 times the balance wheel, so it drives it faster.', dur: 6.5},
+  {id: 'drive_wheel', head: 'The balance wheel', sub: 'One turn of it is one stitch.', dur: 6},
+  {id: 'crankshaft', head: 'The arm shaft', sub: 'Its crank and a link drive the needle bar.', dur: 6},
+  {id: 'needle_assembly', head: 'The needle', sub: 'A 30 mm stroke. The take-up lever leads it by 30°.', dur: 6.5},
+  {id: 'shuttle', head: 'The vibrating shuttle', sub: 'Its point sweeps through the loop at the needle’s lowest point.', dur: 6.5},
+  {id: 'gear_train', head: 'The feed dog', sub: 'It moves the cloth only while the needle is out of it.', dur: 6.5},
+  {id: 'thread_guide_path', head: 'The thread path', sub: 'Spool, tension, take-up lever, needle.', dur: 6.5},
+];
+// the rest of the machine, for the tour
+const REST = [
+  {id: 'presser_foot', head: 'The presser foot', sub: 'Holds the cloth flat on the feed dog.', dur: 5},
+  {id: 'bobbin', head: 'The bobbin and winder', sub: 'Fills the bobbin that sits in the shuttle.', dur: 5},
+  {id: 'tension_regulator', head: 'The tension discs', sub: 'Clamp the upper thread; the thumb nut sets the pressure.', dur: 5},
+  {id: 'spool_pin', head: 'The spool pin', sub: 'Holds the spool, with a light felt drag.', dur: 5},
+  {id: 'machine_head', head: 'The machine head', sub: 'Its face plate swings open to oil the works.', dur: 5.5},
+  {id: 'cabinet', head: 'The cabinet and stand', sub: 'Oak top, cast-iron standards, a folding drop leaf.', dur: 5.5},
+  {id: 'drawers', head: 'The drawers', sub: 'Brass pulls; the centre drop front makes a work surface.', dur: 5.5},
+];
+const INTRO = {id: null, head: 'A SINGER TREADLE, c. 1880–1915', sub: 'Sixteen parts. One stitch per turn of the balance wheel.', dur: 8};
+const OUTRO = {id: null, head: 'Press a number to open a part', sub: 'Drag to orbit · scroll to zoom · keys 1–0, Q W E T Y U', dur: 10};
+
+const FILM = lay([INTRO, ...CHAIN, OUTRO]);
+const TOUR = lay([INTRO, ...CHAIN, ...REST, OUTRO]);
+
+export const FILM_EVENTS = FILM.events;
+export const FILM_CAPTIONS = FILM.captions;
+export const FILM_DURATION = FILM.duration;
+export const TOUR_EVENTS = TOUR.events;
+export const TOUR_CAPTIONS = TOUR.captions;
+export const TOUR_DURATION = TOUR.duration;
+
+// the speed schedule (stitches a minute), by script time: 0 at rest, up to a steady run, a slight rise, down at the end
+const speedFor = (duration) => [
+  {t: 0, rpm: 0},
+  {t: 6, rpm: 240},
+  {t: 30, rpm: 300},
+  {t: duration - 14, rpm: 360},
+  {t: duration - 6, rpm: 240},
+];
+export const FILM_RPM = speedFor(FILM_DURATION);
+export const TOUR_RPM = speedFor(TOUR_DURATION);
+
+/** Speed target at script time t (stitches a minute): the last step at or before t. */
+export function rpmTargetAt(t, rpm = TOUR_RPM) {
+  let v = rpm[0].rpm;
+  for (const r of rpm) if (t >= r.t) v = r.rpm;
   return v;
 }
 
-/** One fixed step of the machine: the speed approaches its target with a time constant, the wheel turns at the speed. */
+/** One fixed step of the machine: the speed approaches its target with a time constant; the wheel turns at the speed. */
 export const TAU = 0.45; // seconds
 export function advance(s, dt, target) {
   const k = 1 - Math.exp(-dt / TAU);
@@ -65,23 +89,20 @@ export function advance(s, dt, target) {
   return {theta, rpm};
 }
 
-/** The machine's state over the whole script, sampled at a fixed step: a pure table (the film reads it, not the clock). */
-export function machineTable(dt = 1 / 240, dur = DURATION + 1) {
+/** The machine's state over a script, sampled at a fixed step: a pure table the film reads (never the clock). */
+export function machineTable(rpm, duration, dt = 1 / 240) {
   const out = [];
   let s = {theta: 0, rpm: 0};
-  for (let t = 0; t <= dur + 1e-9; t += dt) {
+  for (let t = 0; t <= duration + 1 + 1e-9; t += dt) {
     out.push({t, theta: s.theta, rpm: s.rpm});
-    s = advance(s, dt, rpmTargetAt(t));
+    s = advance(s, dt, rpmTargetAt(t, rpm));
   }
   return out;
 }
 
-/** The presenter state at time t for the script. */
-export const presentAt = (t, events = EVENTS, initial) => stateAt(t, events, initial);
-
 /** The caption showing at time t, with its opacity (0..1) for a short fade. */
-export function captionAt(t) {
-  for (const c of CAPTIONS) {
+export function captionAt(t, captions) {
+  for (const c of captions) {
     if (t >= c.t0 && t <= c.t1) {
       const fade = Math.min(1, (t - c.t0) / 0.35, (c.t1 - t) / 0.35);
       return {...c, opacity: smooth(fade)};
@@ -93,14 +114,17 @@ export function captionAt(t) {
 /** The overview's orbit: a quarter turn in the first twelve seconds, then it holds. */
 export const overviewAz = (t) => 26 + 34 * (1 - smooth(t / 12));
 
-/** The beat times the film's timeline file and the review sheets use. */
+/** The presenter state at time t for a script. */
+export const presentAt = (t, events, initial) => stateAt(t, events, initial);
+
+/** Beat times for the film's timeline file: every number is a beat, so capture.mjs --stills beats samples each one. */
 export function timelineBeats() {
   return {
-    duration: DURATION,
+    duration: FILM_DURATION,
     fps: 60,
-    captions: CAPTIONS.map((c) => c.t0),
-    opens: EVENTS.filter((e) => e.type === 'open').map((e) => e.t),
-    speed: RPM.map((r) => r.t),
-    phases: build(EVENTS).segs.map((s) => s.t0),
+    captions: FILM_CAPTIONS.map((c) => c.t0),
+    opens: FILM_EVENTS.filter((e) => e.type === 'open').map((e) => e.t),
   };
 }
+
+export const phasesOf = (events) => build(events).segs.map((s) => ({id: s.id, t0: s.t0, t1: s.t1}));

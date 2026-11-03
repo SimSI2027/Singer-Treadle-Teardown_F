@@ -85,39 +85,42 @@ sub-label, anchor point), connected ids, a 2–3 sentence function text and a pe
 
 ## 1.5 Idle tour
 
-Starts after 25 s of quiet (`?idle=N` overrides it). The tour plays the film's script (`script.js` `EVENTS`):
+Starts after 25 s of quiet (`?idle=N` overrides it). It plays the tour script (`script.js` `TOUR_EVENTS`), which visits all sixteen
+parts and loops (about 112 s). Times are the beat starts, from the script (`lay()`):
 
 | Tour time (s) | Beat |
 |---|---|
-| 0–6 | overview; caption: the machine and its one stitch per turn |
-| 6–12 | the treadle is pumped; speed ramps to 240 |
-| 12 | treadle opens (`cam` treadle) |
-| 20.5 | pitman rod |
-| 28 | belt drive (the band wheel and the belt) |
-| 35.5 | balance wheel |
-| 43 | arm shaft and crank |
-| 50.5 | needle assembly |
-| 58 | vibrating shuttle |
-| 65.5 | feed mechanism |
-| 73 | thread path |
-| 80.5 | close; overview; caption: press a number to open a part |
+| 0–8 | the overview; caption: a Singer treadle, one stitch per turn of the balance wheel |
+| 8 | treadle (the wheel is pumped from 6 s, up to 240 stitches a minute) |
+| 14.6 | pitman rod |
+| 20.6 | belt drive and band wheel |
+| 27.1 | balance wheel |
+| 33.1 | arm shaft and crank |
+| 39.1 | needle assembly |
+| 45.6 | vibrating shuttle |
+| 52.1 | feed mechanism |
+| 58.6 | thread path |
+| 65.1 | presser foot |
+| 70.1 | bobbin and winder |
+| 75.1 | tension regulator |
+| 80.1 | spool pin |
+| 85.1 | machine head |
+| 90.6 | cabinet and stand |
+| 96.1 | drawers |
+| 101.6–111.6 | overview; caption: press a number to open a part |
 
-Any pointer, key, wheel or drag ends the tour at once (the live presenter takes the tour's state as its starting point).
-
-## 1.6 Film timeline (88 s, 60 fps)
-
-Same script as the tour, rendered frame by frame. The overview orbits a quarter turn in the first 12 s, then holds. Captions
-(`script.js` `CAPTIONS`) give one line per beat. The film is `docs/assets/film.mp4`, with a poster frame and a procedural score
-(`sims/singer-treadle-shared/score.py`).
+Any pointer, key, wheel or drag ends the tour at once. The live presenter takes the tour's state as its starting point, so the
+part on display does not jump.
 
 ## 1.7 Performance budget
 
-| Item | Budget | Measured |
+| Item | Budget | Measured (this session) |
 |---|---|---|
-| Frame time, integrated GPU laptop | 60 fps | measured in headless Chromium (see `tests/CHECKLIST.md`) |
-| Draw calls (static parts merged per owner and material) | ≤ ~400 | see the test suite |
-| Triangles | ≤ ~1.5 M | see the test suite |
-| Single HTML page | ≤ ~1 MB (the skill's link-crawler rule) | 0.99 MB |
+| Frame time, headless Chromium, ~10 s running | < 20 ms | passes the suite (`tests/exhibit.spec.mjs`); integrated-GPU laptop not tested |
+| Meshes in the machine | (see draw calls) | 79 (static parts merged per owner and material, plus the moving parts) |
+| Draw calls per frame | ≤ ~400 | estimate: 79 meshes in the colour pass, the same meshes in the shadow pass, and the occlusion pass, about 240 |
+| Triangles in the machine | ≤ ~1.5 M | about 18,300 |
+| Single HTML page | ≤ ~1 MB (the skill's link-crawler rule) | 0.99 MB (`dist/singer-treadle.html`) |
 | Network requests at run time | 0 | asserted by `tests/exhibit.spec.mjs` |
 
 ## 1.8 Verification plan
